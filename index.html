@@ -1,3 +1,4 @@
+  document.getElementById('stepCode').classList.add('active');
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
@@ -4048,33 +4049,32 @@ function changeAvatar() {
   };
   input.click();
 }
-
-/* ============================================================
-   ۲۰. ورود (شبیه‌سازی)
-   ============================================================ */
+/* ============ ورود (ساده) ============ */
 function sendCode() {
-  const phone = document.getElementById('phoneInput').value.trim();
-  if (!/^09\d{9}$/.test(phone)) {
-    showToast('⚠️ ' + t('invalidPhone'));
+  const phoneInput = document.getElementById('phoneInput');
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+  
+  if (!phone || phone.length < 10) {
+    showToast('⚠️ شماره را کامل وارد کنید');
     return;
   }
+  
   userPhone = phone;
-  generatedCode = String(Math.floor(10000 + Math.random() * 90000));
-  document.getElementById('stepPhone').classList.remove('active');
-  document.getElementById('stepCode').classList.add('active');
-  document.getElementById('codeHint').textContent = (currentLang === 'fa' ? 'کد آزمایشی: ' : 'Test code: ') + generatedCode;
-  showToast('📱 ' + (currentLang === 'fa' ? 'کد ارسال شد' : 'Code sent'));
-  const codeInputs = document.querySelectorAll('#codeInputs input');
-  codeInputs.forEach((inp, i) => {
-    inp.value = '';
-    inp.oninput = () => {
-      if (inp.value.length === 1 && i < codeInputs.length - 1) codeInputs[i+1].focus();
-    };
-    inp.onkeydown = (e) => {
-      if (e.key === 'Backspace' && !inp.value && i > 0) codeInputs[i-1].focus();
-    };
-  });
-  codeInputs[0].focus();
+  localStorage.setItem('yares_phone', phone);
+  
+  if (!userId) {
+    userId = 'user_' + Math.floor(100000 + Math.random() * 900000);
+    localStorage.setItem('yares_id', userId);
+  }
+  
+  loggedIn = true;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+  document.getElementById('bottomNav').classList.remove('hidden');
+  updateProfileDisplay();
+  renderChats();
+  
+  showToast('✅ خوش آمدی');
 }
 
 function verifyCode() {
